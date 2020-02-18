@@ -1,0 +1,12 @@
+FROM alpine:latest
+LABEL maintainer="Aleksey Sboev <sboevav@mail.ru>"
+RUN addgroup -g 1000 -S www-data && adduser -u 1000 -D -S -G www-data www-data
+RUN apk update
+RUN apk add nginx tzdata
+ENV TERM=xterm TZ=Asia/Almaty
+RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
+apk del tzdata
+RUN mkdir -p /run/nginx
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
