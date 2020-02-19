@@ -41,10 +41,10 @@
 	<!DOCTYPE html>
 	<html>
 	<head>
-	<title>Welcome to our personal nginx start page!</title>
+	<title>Welcome to our personal nginx start page!</title> <--- Изменено
 	<style>
 	    body {
-		***width: 50em;***
+		width: 50em; <--- Изменено
 		width: 50em;
 		margin: 0 auto;
 		font-family: Tahoma, Verdana, Arial, sans-serif;
@@ -52,7 +52,7 @@
 	</style>
 	</head>
 	<body>
-	<h1>Welcome to our personal nginx start page!</h1>
+	<h1>Welcome to our personal nginx start page!</h1> <--- Изменено
 	<p>If you see this page, the nginx web server is successfully installed and
 	working. Further configuration is required.</p>
 
