@@ -44,7 +44,7 @@
 	<title>Welcome to our personal nginx start page!</title>
 	<style>
 	    body {
-***width: 50em;***
+		***width: 50em;***
 		width: 50em;
 		margin: 0 auto;
 		font-family: Tahoma, Verdana, Arial, sans-serif;
