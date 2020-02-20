@@ -136,10 +136,35 @@
 	root@linux1:/home/user/linux/homework-09# docker ps
 	CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                NAMES
 	82181139f0fd        nginx:alpine        "nginx -g 'daemon of…"   About a minute ago   Up About a minute   0.0.0.0:80->80/tcp   nifty_wing
-
-7. Обращаемся браузером к localhost, видим нашу измененную страницу приветствия
+	```
+7. Обращаемся браузером к localhost, видим нашу измененную страницу приветствия  
 ![firstpage](screenshots/Screenshot-1.png "Страница приветствия nginx")
 
+8. Для выкладывания полученного образа на регистрируемся на dockerhub, создаем публичный репозиторий sboevav/nginx-v1, затем из терминала выполняем команду подключения  
+	```
+	root@linux1:/home/user/linux/homework-09# docker login
+
+	Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+	Username: sboevav
+	Password: 
+	WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+	Configure a credential helper to remove this warning. See
+	https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+	Login Succeeded
+	```
+9. Теперь указываем образ, который хотим залить dockerhub, и запускаем процесс  
+	```
+	root@linux1:/home/user/linux/homework-09# docker tag nginx:alpine sboevav/nginx-v1:alpine
+	root@linux1:/home/user/linux/homework-09# docker push sboevav/nginx-v1:alpine
+
+	The push refers to repository [docker.io/sboevav/nginx-v1]
+	e523e1dce5f5: Pushed 
+	a3ef4a1dab89: Pushed 
+	5bdb591a7607: Pushed 
+	5216338b40a7: Pushed 
+	alpine: digest: sha256:14a7b798878a2745fff8b303671ca19269f077a2e37623a753110fa00d08c49e size: 1153
+	```
 
 ## Определите разницу между контейнером и образом  
 Делаю попытку объяснения, собрав воедино некоторые термины из гугля и добавив свои мысли :)  
