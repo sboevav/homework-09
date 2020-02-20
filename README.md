@@ -140,7 +140,7 @@
 7. Обращаемся браузером к localhost, видим нашу измененную страницу приветствия  
 ![firstpage](screenshots/Screenshot-1.png "Страница приветствия nginx")
 
-8. Для выкладывания полученного образа на регистрируемся на dockerhub, создаем публичный репозиторий sboevav/nginx-v1, затем из терминала выполняем команду подключения  
+8. Для выкладывания полученного образа регистрируемся на dockerhub, создаем публичный репозиторий sboevav/nginx-v1, затем из терминала выполняем команду подключения  
 	```
 	root@linux1:/home/user/linux/homework-09# docker login
 
@@ -153,7 +153,7 @@
 
 	Login Succeeded
 	```
-9. Теперь указываем образ, который хотим залить dockerhub, и запускаем процесс  
+9. Теперь указываем образ, который хотим залить на dockerhub, и запускаем процесс  
 	```
 	root@linux1:/home/user/linux/homework-09# docker tag nginx:alpine sboevav/nginx-v1:alpine
 	root@linux1:/home/user/linux/homework-09# docker push sboevav/nginx-v1:alpine
@@ -164,6 +164,34 @@
 	5bdb591a7607: Pushed 
 	5216338b40a7: Pushed 
 	alpine: digest: sha256:14a7b798878a2745fff8b303671ca19269f077a2e37623a753110fa00d08c49e size: 1153
+	```
+10. Останавливаем контейнер и удаляем созданные образы  
+	```
+	root@linux1:/home/user/linux/homework-09# docker stop 82181139f0fd
+	root@linux1:/home/user/linux/homework-09# docker rmi -f 95d48724bf17
+	root@linux1:/home/user/linux/homework-09# docker rmi -f alpine
+	```
+11. Теперь выполняем проверку - заливаем наш образ, убеждаемся что браузер не отображает стартовую страницу, затем запускаем залитый образ и снова видим нашу стартовую страницу
+	```
+	root@linux1:/home/user/linux/homework-09# docker pull sboevav/nginx-v1:alpine
+	alpine: Pulling from sboevav/nginx-v1
+	c9b1b535fdd9: Already exists 
+	51920734f6dc: Already exists 
+	afd29620d8ec: Already exists 
+	96b22fa3a01a: Already exists 
+	Digest: sha256:14a7b798878a2745fff8b303671ca19269f077a2e37623a753110fa00d08c49e
+	Status: Downloaded newer image for sboevav/nginx-v1:alpine
+	
+	root@linux1:/home/user/linux/homework-09# docker images -a
+	REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+	sboevav/nginx-v1    alpine              95d48724bf17        27 hours ago        8.81MB
+
+	root@linux1:/home/user/linux/homework-09# docker run -d -p 80:80 sboevav/nginx-v1:alpine
+	8cb5bc0fded117eefbaf4bd62f39fef3a7040ccb6ac4b2b5df62ed02d63db192
+
+	root@linux1:/home/user/linux/homework-09# docker ps
+	CONTAINER ID        IMAGE                     COMMAND                  CREATED             STATUS              PORTS                NAMES
+	8cb5bc0fded1        sboevav/nginx-v1:alpine   "nginx -g 'daemon of…"   9 seconds ago       Up 9 seconds        0.0.0.0:80->80/tcp   competent_davinci
 	```
 
 ## Определите разницу между контейнером и образом  
