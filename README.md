@@ -230,3 +230,26 @@
 	```
 
 
+
+root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker images -a
+REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
+<none>                <none>              9b65b7f48b9e        2 minutes ago       8.81MB
+nginx-php-fpm_nginx   latest              d58c157be5da        2 minutes ago       8.81MB
+<none>                <none>              e98b1e1314fb        2 minutes ago       8.81MB
+<none>                <none>              dba3d0e8afbf        2 minutes ago       5.59MB
+nginx-php-fpm_php     latest              2e8943e0887b        2 minutes ago       122MB
+<none>                <none>              59fa4cf2bca4        3 minutes ago       120MB
+<none>                <none>              1660a11a6dbf        4 minutes ago       77.6MB
+alpine                latest              e7d92cdc71fe        5 weeks ago         5.59MB
+php                   7.2-fpm-alpine3.7   a2dfd79ee40c        16 months ago       77.6MB
+root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker images
+REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
+nginx-php-fpm_nginx   latest              d58c157be5da        3 minutes ago       8.81MB
+nginx-php-fpm_php     latest              2e8943e0887b        3 minutes ago       122MB
+alpine                latest              e7d92cdc71fe        5 weeks ago         5.59MB
+php                   7.2-fpm-alpine3.7   a2dfd79ee40c        16 months ago       77.6MB
+root@linux1:/home/user/linux/homework-09/nginx-php-fpm# 
+
+
+
+

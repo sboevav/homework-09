@@ -1,8 +1,11 @@
-version: '3'
+version: '3.7'
 
 services:
   nginx:
-    image: nginx:latest
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx-alpine
     ports:
       - 80:80
     volumes:
@@ -10,9 +13,29 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - php
+    networks:
+      front_net:
+        ipv4_address: 10.20.30.10
+        aliases:
+          - nginx
 
   php:
-    image: php:fpm
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    container_name: php-alpine
     volumes:
       - ./src:/usr/share/nginx/html
+    networks:
+      front_net:
+        ipv4_address: 10.20.30.20
+        aliases:
+          - php
+
+networks:
+  front_net:
+    ipam:
+        driver: default
+        config:
+          - subnet: "10.20.30.0/24"
 
