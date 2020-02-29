@@ -1,6 +1,6 @@
 # Docker, docker-compose, dockerfile
 
-## Создайте свой кастомный образ nginx на базе alpine  
+## Основное ДЗ: создайте свой кастомный образ nginx на базе alpine  
 
 Во время выполнения ДЗ пришлось познакомиться с легковесной версией дистрибутива линукс - alpine. Оказалось, что имеются отличия в администрировании, с которыми пришлось разбираться. Ради интереса развернул вагрантом виртуалку alpine и поковырялся в ней. Сама виртуалка заняла всего 260 МБ. При сборке образа и запуске контейнера также пришлось разбираться как это все функционирует, какими командами управляется, бороться с разными ошибками типа: почему не собирается контейнер, почему при запуске контейнер сразу останавливается или почему nginx не выдает стартовую страницу. При разборе ошибок научился подключаться к контейнеру, вносить изменения, и т.п.  
 Также при поиске информации находил разные варианты реализации подобной задачи. Одно из решений понравилось - файл Dockerfile-original заводится с пол-оборота, нормально собирается образ и запускается контейнер. При этом он добавляет группу и пользователя nginx, устанавливает nginx либо из готовых пакетов, либо собирает пакеты из исходников, если мы основаны на конфигурации, для которой пакеты еще не построены, а также перенаправляет логи ошибок и запросов.  
@@ -215,9 +215,11 @@
 
 И еще ссылочка по тому же вопросу: https://fooobar.com/questions/17011924/is-it-possible-to-use-a-kernel-module-built-from-within-docker  
 
-## Создайте кастомные образы nginx и php, объедините их в docker-compose  
+## ДЗ*: Создайте кастомные образы nginx и php, объедините их в docker-compose  
 
-???. Установим docker-compose
+При выполнении этого задания пришлось побольше как покопаться в теории, так и попрактиковаться. Вылазила куча всяких ошибок и непоняток. Сюрпризом оказалось то, что docker-compose очень капризен к структуре файла docker-compose.yml: недопустимы символы табуляции, где-то обязательно должны быть пробелы и т.п. Пришлось повозиться и со сборкой образов. Хотелось создать полностью свой образ php на alpine, но там больно уж много всего нужно дополнительно прописывать, никак контейнер не запускался, в итоге забил на это и взял за основу php:7.2-fpm-alpine3.7. В итоге практики пришел к выводу, что проще дополнять под свои потребности уже готовые образы с нужным приложением, собранным на базе нужного ядра, чем с нуля собирать образ с нужным приложением на выбранном ядре, т.к. в этом случае необходимо не только знать ядро, на котором его устанавливаешь, но и быть хорошо знакомым с самим устанавливаемым пакетом со всеми его заморочками. В результате задания собраны два образа: nginx на базе alpine - из первой части задания, и php на базе php:7.2-fpm-alpine3.7. Проект расположен в папке nginx-php-fpm.
+
+1. Установим docker-compose  
 	```
 	root@linux1:/home/user/linux/homework-09# curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 	  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -229,26 +231,59 @@
 	docker-compose version 1.25.4, build 8d51620a
 	```
 
+2. Создаем папку nginx-php-fpm для выполнения задания, а в ней папки: nginx-для сборки образа nginx на базе alpine, php-для сборки образа php на базе php:7.2-fpm-alpine3.7, src-для скрипта php, выводящего phpinfo.  
 
+3. В папке nginx создаем два файла:  
+Dockerfile для сборки образа следующего содержания:  
+	```
+	user@linux1:~/linux/homework-09$ cat nginx-php-fpm/nginx/Dockerfile
+	FROM alpine:latest
+	LABEL maintainer="Aleksey Sboev <sboevav@mail.ru>"
 
-root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker images -a
-REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
-<none>                <none>              9b65b7f48b9e        2 minutes ago       8.81MB
-nginx-php-fpm_nginx   latest              d58c157be5da        2 minutes ago       8.81MB
-<none>                <none>              e98b1e1314fb        2 minutes ago       8.81MB
-<none>                <none>              dba3d0e8afbf        2 minutes ago       5.59MB
-nginx-php-fpm_php     latest              2e8943e0887b        2 minutes ago       122MB
-<none>                <none>              59fa4cf2bca4        3 minutes ago       120MB
-<none>                <none>              1660a11a6dbf        4 minutes ago       77.6MB
-alpine                latest              e7d92cdc71fe        5 weeks ago         5.59MB
-php                   7.2-fpm-alpine3.7   a2dfd79ee40c        16 months ago       77.6MB
-root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker images
-REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
-nginx-php-fpm_nginx   latest              d58c157be5da        3 minutes ago       8.81MB
-nginx-php-fpm_php     latest              2e8943e0887b        3 minutes ago       122MB
-alpine                latest              e7d92cdc71fe        5 weeks ago         5.59MB
-php                   7.2-fpm-alpine3.7   a2dfd79ee40c        16 months ago       77.6MB
-root@linux1:/home/user/linux/homework-09/nginx-php-fpm# 
+	RUN apk update \
+	    && apk upgrade \
+	    && apk add nginx \
+	    && mkdir -p /run/nginx
+
+	EXPOSE 80
+
+	CMD ["nginx", "-g", "daemon off;"]
+	```
+nginx.conf для изменения конфигурации по умолчанию следующего содержания (конфигурация загуглена, так что часть опций незнакома - для этого уже надо разбираться отдельно):  
+	```
+	user@linux1:~/linux/homework-09$ cat nginx-php-fpm/nginx/nginx.conf
+	worker_processes  1;
+
+	events {
+	    worker_connections  1024;
+	}
+
+	http {
+	    include       mime.types;
+	    default_type  application/octet-stream;
+	    sendfile        on;
+	    keepalive_timeout  65;
+
+	    server {
+		root   /usr/share/nginx/html;
+		listen       80;
+		server_name  localhost;
+
+		location / {
+		    #index  index.html index.htm index.php;
+		    index  index.php;
+		}
+
+		location ~ \.php$ {
+		    fastcgi_pass   php:9000;
+		    fastcgi_index  index.php;
+		    include fastcgi_params;
+		    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		    fastcgi_param PATH_INFO $fastcgi_path_info;
+		}
+	    }
+	}
+	```
 
 
 
