@@ -268,7 +268,6 @@
 		server_name  localhost;
 
 		location / {
-		    #index  index.html index.htm index.php;
 		    index  index.php;
 		}
 
@@ -282,7 +281,60 @@
 	    }
 	}
 	```
+4. В папке php создаем Dockerfile чисто для сборки номинального образа, в который при необходимости можем прикрутить что-то дополнительно.  
+	```
+	user@linux1:~/linux/homework-09$ cat nginx-php-fpm/php/Dockerfile
+	FROM php:7.2-fpm-alpine3.7
+	LABEL maintainer="Aleksey Sboev <sboevav@mail.ru>"
+	```
+5. В папке src создаем скрипт index.php, к которому будет обращаться nginx вместо вывода стандартного приветствия:  
+	```
+	user@linux1:~/linux/homework-09$ cat nginx-php-fpm/src/index.php
+	<?php phpinfo();
+	```
+6. В папке nginx-php-fpm создаем файл docker-compose.yml. В процессе выполнения ДЗ за основу взят подсмотренный файл из лекции, с которым проводил разные эксперименты. 
+	```
+	user@linux1:~/linux/homework-09$ cat nginx-php-fpm/docker-compose.yml
+	version: '3.7'
 
+	services:
+	  nginx:
+	    build:
+	      context: ./nginx
+	      dockerfile: Dockerfile
+	    container_name: nginx-alpine
+	    ports:
+	      - 80:80
+	    volumes:
+	      - ./src:/usr/share/nginx/html
+	      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+	    depends_on:
+	      - php
+	    networks:
+	      front_net:
+		ipv4_address: 10.20.30.10
+		aliases:
+		  - nginx
 
+	  php:
+	    build:
+	      context: ./php
+	      dockerfile: Dockerfile
+	    container_name: php-alpine
+	    volumes:
+	      - ./src:/usr/share/nginx/html
+	    networks:
+	      front_net:
+		ipv4_address: 10.20.30.20
+		aliases:
+		  - php
+
+	networks:
+	  front_net:
+	    ipam:
+		driver: default
+		config:
+		  - subnet: "10.20.30.0/24"
+	```
 
 
