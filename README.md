@@ -143,7 +143,7 @@
 	82181139f0fd        nginx:alpine        "nginx -g 'daemon of…"   About a minute ago   Up About a minute   0.0.0.0:80->80/tcp   nifty_wing
 	```
 8. Обращаемся браузером к localhost, видим нашу измененную страницу приветствия  
-![firstpage](screenshots/Screenshot-1.png "Страница приветствия nginx")
+![Иллюстрация-1 к описанию ДЗ](screenshots/Screenshot-1.png "Страница приветствия nginx")
 
 9. Для выкладывания полученного образа регистрируемся на dockerhub, создаем публичный репозиторий sboevav/nginx-v1, затем из терминала выполняем команду подключения  
 	```
@@ -363,6 +363,6 @@
 	a96fd2bd6ed4        nginx-php-fpm_php     "docker-php-entrypoi…"   6 minutes ago       Up 6 minutes        9000/tcp             php-alpine
 	```
 10. Обращаемся браузером к localhost, видим php info  
-![secondpage](screenshots/Screenshot-2.png "Отображение php info")
+![Иллюстрация-2 к описанию ДЗ](screenshots/Screenshot-2.png "Отображение php info")
 
 
