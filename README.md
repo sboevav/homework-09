@@ -363,6 +363,6 @@
 	a96fd2bd6ed4        nginx-php-fpm_php     "docker-php-entrypoi…"   6 minutes ago       Up 6 minutes        9000/tcp             php-alpine
 	```
 10. Обращаемся браузером к localhost, видим php info  
-![firstpage](screenshots/Screenshot-2.png "Отображение php info")
+![secondpage](screenshots/Screenshot-2.png "Отображение php info")
 
 
