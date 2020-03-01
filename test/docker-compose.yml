@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+  nginx: 
+    image: sboevav/nginx-v2:alpine
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/usr/share/nginx/html
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - php
+
+  php: 
+    image: sboevav/php-v1:7.2-fpm-alpine3.7
+    volumes:
+      - ./src:/usr/share/nginx/html
+

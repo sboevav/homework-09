@@ -365,4 +365,130 @@
 10. Обращаемся браузером к localhost, видим php info  
 ![Иллюстрация-2 к описанию ДЗ](screenshots/Screenshot-2.png "Отображение php info")
 
+11. Выкладываем получившиеся образы на dockerhub  
+	```
+root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker tag nginx-php-fpm_nginx sboevav/nginx-v2:alpine
+root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker push sboevav/nginx-v2:alpine
+The push refers to repository [docker.io/sboevav/nginx-v2]
+7d3ce1f55d8b: Pushed 
+5216338b40a7: Mounted from sboevav/nginx-v1 
+alpine: digest: sha256:5436f1919bddf5c36a7a0b72d8b4ed3edd6ccb63276db3c07acda866079c6bd8 size: 739
+	```
+	```
+	root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker tag nginx-php-fpm_php sboevav/php-v1:7.2-fpm-alpine3.7
+	root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker push sboevav/php-v1:7.2-fpm-alpine3.7
+	The push refers to repository [docker.io/sboevav/php-v1]
+	a219a6485189: Mounted from library/php 
+	9ff384c242d9: Mounted from library/php 
+	c2775d6cea45: Mounted from library/php 
+	c88b2983c3ba: Mounted from library/php 
+	f8dadb08abb9: Mounted from library/php 
+	bcbe08cb547c: Mounted from library/php 
+	94c73441b05f: Mounted from library/php 
+	dc00fbef458a: Mounted from library/php 
+	9922bc15eeef: Mounted from library/php 
+	0ea33a93585c: Mounted from library/php 
+	ebf12965380b: Mounted from library/php 
+	7.2-fpm-alpine3.7: digest: sha256:15b79b4e8d117905ea7ca45b175a9447a0291e8d7a62eb565dca6fc67094e668 size: 2618
+	```
+12. Остановим запущенные контейнеры и удалим все образы  
+	```
+	root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker-compose down --rmi all
+	Stopping nginx-alpine ... done
+	Stopping php-alpine   ... done
+	Removing nginx-alpine ... done
+	Removing php-alpine   ... done
+	Removing network nginx-php-fpm_front_net
+	Removing image nginx-php-fpm_php
+	Removing image nginx-php-fpm_nginx
+	root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker rmi alpine
+	Untagged: alpine:latest
+	Untagged: alpine@sha256:ab00606a42621fb68f2ed6ad3c88be54397f981a7b70a79db3d1172b11c4367d
+	Deleted: sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a
+	Deleted: sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10
+	root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker rmi a2dfd79ee40c
+	Untagged: php:7.2-fpm-alpine3.7
+	Untagged: php@sha256:a990e5ff7b2e5a77ecfa904186d791fe6a0c52a267a607b6a578e6a48d9e1e29
+	Deleted: sha256:a2dfd79ee40cd9c8f631719de47683cb07245224996d2e80dd40ed60f54b745a
+	Deleted: sha256:4f87fffa6b2c9a97022eb2d0a28a73bf343e97d04e404db4e501b233e0730d7e
+	Deleted: sha256:7fef6146944bb249240415d8fdd107f40ed7eb5b876192b8db399b2c6b917c83
+	Deleted: sha256:bbf0d7793c8e000962c04cc223b40f582423840943c91ba05405227a3c4ebe15
+	Deleted: sha256:c8f97ff266ad8efe2232eb04d43c6e943c1e6ff6d33a129296477674c8985bf0
+	Deleted: sha256:c8b6f05e5125910fd7136ac3efde88522b4be236fa12c5014182e2dc341a9f6a
+	Deleted: sha256:3e2453051f8bc2722aade0f161843cfd80490c7c8c5ceebda386161bdb7b18d9
+	Deleted: sha256:7461a8183f3f444035d17d1890351e96e0bd0caab9b09c6b5d9fad92e47aebe6
+	Deleted: sha256:bc760f28498def462dea1b548696b187ca102502f4c326972067f9c57d3a60f3
+	Deleted: sha256:9a98418671c02ef4d04cba916546601f2564c0e1972640009a38eddc6966fa13
+	Deleted: sha256:14680ed4a774d46d1594e388b43e9c9f6747a33b51625deda588f32c21ef6649
+	Deleted: sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888
+	```
+
+13. Теперь выполним тестовую загрузку наших образов с dockerhub и зпуск контейнеров. Для этого создадим тестовую папку test с двумя папками внутри: nginx и src. В папку nginx скопируем имеющийся файл конфигурации nginx.conf, а в папку src - имеющиймя файл скрипта index.php  
+
+14. В папке test создаем новый файл docker-compose.yml. Данный файл постарался уменьшить до минимума, оставив только названия образов, которые нам нужны, необходимые порты и ссылки на файлы. Можно убрать и информацию о сети - докер и сам в данном случае справляется с адресами контейнеров. В принципе и в предыдущем примере docker-compose запущенные контейнеры работают без указания настроек сети. Ниже содержимое тестового файла.  
+	```
+	root@linux1:/home/user/linux/homework-09/test# cat docker-compose.yml
+	version: '3.7'
+
+	services:
+	  nginx: 
+	    image: sboevav/nginx-v2:alpine
+	    ports:
+	      - 80:80
+	    volumes:
+	      - ./src:/usr/share/nginx/html
+	      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+	    depends_on:
+	      - php
+
+	  php: 
+	    image: sboevav/php-v1:7.2-fpm-alpine3.7
+	    volumes:
+	      - ./src:/usr/share/nginx/html
+	```
+15. Запускаем сборку образов.  
+	```
+	root@linux1:/home/user/linux/homework-09/test# docker-compose up -d
+	Creating network "test_default" with the default driver
+	Pulling php (sboevav/php-v1:7.2-fpm-alpine3.7)...
+	7.2-fpm-alpine3.7: Pulling from sboevav/php-v1
+	c67f3896b22c: Pull complete
+	88777455d910: Pull complete
+	955e2028dd61: Pull complete
+	7d47ce93cc1f: Pull complete
+	591bb8d9afc3: Pull complete
+	10a158dd6f4a: Pull complete
+	4aa0e93a6621: Pull complete
+	a5e3d48db581: Pull complete
+	a53ed1f96150: Pull complete
+	9b01b7a38d4e: Pull complete
+	6100beaf6f07: Pull complete
+	Digest: sha256:15b79b4e8d117905ea7ca45b175a9447a0291e8d7a62eb565dca6fc67094e668
+	Status: Downloaded newer image for sboevav/php-v1:7.2-fpm-alpine3.7
+	Pulling nginx (sboevav/nginx-v2:alpine)...
+	alpine: Pulling from sboevav/nginx-v2
+	c9b1b535fdd9: Pull complete
+	c5f864ad7063: Pull complete
+	Digest: sha256:5436f1919bddf5c36a7a0b72d8b4ed3edd6ccb63276db3c07acda866079c6bd8
+	Status: Downloaded newer image for sboevav/nginx-v2:alpine
+	Creating test_php_1 ... done
+	Creating test_nginx_1 ... done
+	```
+16. Снова обращаемся браузером к localhost и видим php info  
+
+17. Работа закончена, смотрим, какие у нас имеются образы и затем останавливаем контейнеры с удалением образов
+	```
+	root@linux1:/home/user/linux/homework-09/test# docker images -a
+	REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+	sboevav/nginx-v2    alpine              8e41024be10b        8 hours ago         8.81MB
+	sboevav/php-v1      7.2-fpm-alpine3.7   7df78016019f        8 hours ago         77.6MB
+	root@linux1:/home/user/linux/homework-09/test# docker-compose down --rmi all
+	Stopping test_nginx_1 ... done
+	Stopping test_php_1   ... done
+	Removing test_nginx_1 ... done
+	Removing test_php_1   ... done
+	Removing network test_default
+	Removing image sboevav/php-v1:7.2-fpm-alpine3.7
+	Removing image sboevav/nginx-v2:alpine
+	```
 
