@@ -367,12 +367,12 @@
 
 11. Выкладываем получившиеся образы на dockerhub  
 	```
-root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker tag nginx-php-fpm_nginx sboevav/nginx-v2:alpine
-root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker push sboevav/nginx-v2:alpine
-The push refers to repository [docker.io/sboevav/nginx-v2]
-7d3ce1f55d8b: Pushed 
-5216338b40a7: Mounted from sboevav/nginx-v1 
-alpine: digest: sha256:5436f1919bddf5c36a7a0b72d8b4ed3edd6ccb63276db3c07acda866079c6bd8 size: 739
+	root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker tag nginx-php-fpm_nginx sboevav/nginx-v2:alpine
+	root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker push sboevav/nginx-v2:alpine
+	The push refers to repository [docker.io/sboevav/nginx-v2]
+	7d3ce1f55d8b: Pushed 
+	5216338b40a7: Mounted from sboevav/nginx-v1 
+	alpine: digest: sha256:5436f1919bddf5c36a7a0b72d8b4ed3edd6ccb63276db3c07acda866079c6bd8 size: 739
 	```
 	```
 	root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker tag nginx-php-fpm_php sboevav/php-v1:7.2-fpm-alpine3.7
@@ -422,7 +422,6 @@ alpine: digest: sha256:5436f1919bddf5c36a7a0b72d8b4ed3edd6ccb63276db3c07acda8660
 	Deleted: sha256:14680ed4a774d46d1594e388b43e9c9f6747a33b51625deda588f32c21ef6649
 	Deleted: sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888
 	```
-
 13. Теперь выполним тестовую загрузку наших образов с dockerhub и зпуск контейнеров. Для этого создадим тестовую папку test с двумя папками внутри: nginx и src. В папку nginx скопируем имеющийся файл конфигурации nginx.conf, а в папку src - имеющиймя файл скрипта index.php  
 
 14. В папке test создаем новый файл docker-compose.yml. Данный файл постарался уменьшить до минимума, оставив только названия образов, которые нам нужны, необходимые порты и ссылки на файлы. Можно убрать и информацию о сети - докер и сам в данном случае справляется с адресами контейнеров. В принципе и в предыдущем примере docker-compose запущенные контейнеры работают без указания настроек сети. Ниже содержимое тестового файла.  
@@ -476,7 +475,7 @@ alpine: digest: sha256:5436f1919bddf5c36a7a0b72d8b4ed3edd6ccb63276db3c07acda8660
 	```
 16. Снова обращаемся браузером к localhost и видим php info  
 
-17. Работа закончена, смотрим, какие у нас имеются образы и затем останавливаем контейнеры с удалением образов
+17. Работа закончена, смотрим, какие у нас имеются образы и затем останавливаем контейнеры с удалением образов  
 	```
 	root@linux1:/home/user/linux/homework-09/test# docker images -a
 	REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
