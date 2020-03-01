@@ -4,7 +4,7 @@
 
 Во время выполнения ДЗ пришлось познакомиться с легковесной версией дистрибутива линукс - alpine. Оказалось, что имеются отличия в администрировании, с которыми пришлось разбираться. Ради интереса развернул вагрантом виртуалку alpine и поковырялся в ней. Сама виртуалка заняла всего 260 МБ. При сборке образа и запуске контейнера также пришлось разбираться как это все функционирует, какими командами управляется, бороться с разными ошибками типа: почему не собирается контейнер, почему при запуске контейнер сразу останавливается или почему nginx не выдает стартовую страницу. При разборе ошибок научился подключаться к контейнеру, вносить изменения, и т.п.  
 Также при поиске информации находил разные варианты реализации подобной задачи. Одно из решений понравилось - файл Dockerfile-original заводится с пол-оборота, нормально собирается образ и запускается контейнер. При этом он добавляет группу и пользователя nginx, устанавливает nginx либо из готовых пакетов, либо собирает пакеты из исходников, если мы основаны на конфигурации, для которой пакеты еще не построены, а также перенаправляет логи ошибок и запросов.  
-Несмотря на это решение хотелось самому создать минимальный работающий образ. Результат работы представлен ниже.
+Несмотря на это решение хотелось самому создать минимальный работающий образ. Работа с докером осуществляется с повышенными правами, поэтому почти все команды выполнены из под рута. Результат работы представлен ниже.
 
 1. Создаем Dockerfile для сборки образа следующего содержания:  
 	```
@@ -292,7 +292,7 @@
 	user@linux1:~/linux/homework-09$ cat nginx-php-fpm/src/index.php
 	<?php phpinfo();
 	```
-6. В папке nginx-php-fpm создаем файл docker-compose.yml. В процессе выполнения ДЗ за основу взят подсмотренный файл из лекции, с которым проводил разные эксперименты. 
+6. В папке nginx-php-fpm создаем файл docker-compose.yml. За основу взят подсмотренный файл из лекции, с которым проводил разные эксперименты. 
 	```
 	user@linux1:~/linux/homework-09$ cat nginx-php-fpm/docker-compose.yml
 	version: '3.7'
@@ -336,5 +336,33 @@
 		config:
 		  - subnet: "10.20.30.0/24"
 	```
+7. Переходим в корневую папку с файлом docker-compose.yml и запускаем сборку образов. 
+	```
+	root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker-compose up -d
+	Creating network "nginx-php-fpm_front_net" with the default driver
+	Building php
+	Step 1/2 : FROM php:7.2-fpm-alpine3.7
+	...
+	Creating php-alpine ... done
+	Creating nginx-alpine ... done
+	```
+8. Проверим наличие образов
+	```
+	root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker images
+	REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
+	nginx-php-fpm_nginx   latest              8e41024be10b        2 minutes ago       8.81MB
+	nginx-php-fpm_php     latest              7df78016019f        3 minutes ago       77.6MB
+	alpine                latest              e7d92cdc71fe        6 weeks ago         5.59MB
+	php                   7.2-fpm-alpine3.7   a2dfd79ee40c        16 months ago       77.6MB
+	```
+9. Проверим, что наши контейнеры нормально запустились
+	```
+	root@linux1:/home/user/linux/homework-09/nginx-php-fpm# docker ps -a
+	CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS              PORTS                NAMES
+	444492a06413        nginx-php-fpm_nginx   "nginx -g 'daemon of…"   6 minutes ago       Up 6 minutes        0.0.0.0:80->80/tcp   nginx-alpine
+	a96fd2bd6ed4        nginx-php-fpm_php     "docker-php-entrypoi…"   6 minutes ago       Up 6 minutes        9000/tcp             php-alpine
+	```
+10. Обращаемся браузером к localhost, видим php info  
+![firstpage](screenshots/Screenshot-2.png "Отображение php info")
 
 
